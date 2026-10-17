@@ -2,7 +2,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Premalu",
+    page_title="Thanneer Mathan Dinangal",
     layout="centered"
 )
 
@@ -35,10 +35,11 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
-st.title("Premalu")
+st.title("Thanneer Mathan Dinangal")
 
 left, center, right = st.columns([1, 2, 1])
 
 with center:
+
     if st.button("Click me", use_container_width=True):
-      st.video(r"Premalu.mkv")
+     st.video("https://youtu.be/awpNsIKfsmA")
