@@ -1,15 +1,112 @@
 
 import streamlit as st
+from html import escape
 
 st.set_page_config(
     page_title="The GOAT: Lionel Messi",
     page_icon="⚽",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-st.markdown("""
+TROPHIES = [
+    ("La Liga", "10"),
+    ("Champions League", "4"),
+    ("Copa del Rey", "7"),
+    ("Spanish Super Cup", "8"),
+    ("UEFA Super Cup", "3"),
+    ("FIFA Club World Cup", "3"),
+    ("Ligue 1", "2"),
+    ("Trophée des Champions", "1"),
+    ("World Cup", "1"),
+    ("Copa América", "2"),
+    ("Finalissima", "1"),
+    ("Olympic Gold", "1"),
+    ("U-20 World Cup", "1"),
+    ("Leagues Cup", "1"),
+    ("Supporters' Shield", "1"),
+    ("Eastern Conference", "1"),
+    ("MLS Cup", "1"),
+]
+
+PERFORMANCES = [
+    {
+        "match": "Barcelona vs Real Madrid",
+        "date": "April 2017",
+        "result": "3–2",
+        "description": (
+            "Messi scored twice in a dramatic El Clásico victory "
+            "at the Santiago Bernabéu, including a stoppage-time winner."
+        ),
+    },
+    {
+        "match": "Barcelona vs Arsenal",
+        "date": "April 2010",
+        "result": "4–1",
+        "description": (
+            "Messi scored all four goals in a sensational Champions "
+            "League quarter-final performance at Camp Nou."
+        ),
+    },
+    {
+        "match": "Barcelona vs Bayern Munich",
+        "date": "May 2015",
+        "result": "3–0",
+        "description": (
+            "Messi scored twice and helped create the third goal "
+            "in a memorable Champions League semi-final first leg."
+        ),
+    },
+    {
+        "match": "Barcelona vs Getafe",
+        "date": "April 2007",
+        "result": "5–2",
+        "description": (
+            "Messi scored an extraordinary solo goal, dribbling past "
+            "multiple defenders in a run often compared to Maradona's."
+        ),
+    },
+    {
+        "match": "Argentina vs Ecuador",
+        "date": "October 2017",
+        "result": "3–1",
+        "description": (
+            "Messi scored a hat-trick to secure Argentina's place "
+            "at the 2018 FIFA World Cup."
+        ),
+    },
+    {
+        "match": "Argentina vs France",
+        "date": "December 2022",
+        "result": "4–2 on penalties",
+        "description": (
+            "Messi scored twice in the World Cup final and converted "
+            "his penalty as Argentina won the trophy."
+        ),
+    },
+    {
+        "match": "Barcelona vs Manchester United",
+        "date": "May 2011",
+        "result": "3–1",
+        "description": (
+            "Messi scored a brilliant long-range goal in the Champions "
+            "League final as Barcelona dominated Manchester United."
+        ),
+    },
+    {
+        "match": "Argentina vs Croatia",
+        "date": "December 2022",
+        "result": "3–0",
+        "description": (
+            "Messi scored a penalty and produced a stunning run and "
+            "assist for Julián Álvarez in the World Cup semi-final."
+        ),
+    },
+]
+
+st.html("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 * {
     box-sizing: border-box;
@@ -17,7 +114,7 @@ st.markdown("""
 
 .stApp {
     background: #eef1f7;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     color: #222;
 }
 
@@ -25,24 +122,32 @@ header[data-testid="stHeader"] {
     background: transparent;
 }
 
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+footer {
+    display: none !important;
+}
+
 .block-container {
-    max-width: 1400px;
-    padding: 30px 30px 20px;
+    max-width: 1500px;
+    padding: 30px 30px 25px !important;
 }
 
 .hero {
-    background: linear-gradient(135deg, #ff512f, #dd2476, #1c1c7c);
-    border-radius: 24px;
-    padding: 45px 20px;
+    position: relative;
+    overflow: hidden;
     text-align: center;
     color: white;
-    box-shadow: 0 8px 25px rgba(0,0,0,.15);
-    transition: .3s;
+    background: linear-gradient(135deg, #ff512f, #dd2476, #1c1c7c);
+    border-radius: 22px;
+    padding: 42px 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    transition: transform .3s, box-shadow .3s;
 }
 
 .hero:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px rgba(0,0,0,.2);
+    box-shadow: 0 14px 28px rgba(0,0,0,.19);
 }
 
 .hero img {
@@ -50,11 +155,11 @@ header[data-testid="stHeader"] {
     height: 200px;
     object-fit: cover;
     object-position: center;
-    border: 5px solid white;
     border-radius: 50%;
     background: #222;
-    box-shadow: 0 6px 15px rgba(0,0,0,.2);
-    transition: .3s;
+    border: 5px solid white;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    transition: transform .3s;
 }
 
 .hero img:hover {
@@ -62,11 +167,18 @@ header[data-testid="stHeader"] {
 }
 
 .hero h1 {
-    color: white !important;
-    font-size: 44px;
+    color: white;
+    font-size: clamp(32px, 5vw, 48px);
     font-weight: 800;
-    margin: 18px 0 0;
+    letter-spacing: 1px;
+    margin: 20px 0 5px;
     text-shadow: 2px 2px 5px rgba(0,0,0,.25);
+}
+
+.hero p {
+    margin: 8px 0 0;
+    font-size: 16px;
+    color: rgba(255,255,255,.9);
 }
 
 .section {
@@ -74,22 +186,26 @@ header[data-testid="stHeader"] {
     padding: 35px;
     border: 2px solid white;
     border-radius: 22px;
-    box-shadow: 0 8px 25px rgba(102,126,234,.15);
+    box-shadow: 0 8px 25px rgba(102,126,234,.16);
+    text-align: center;
 }
 
 .trophies {
-    background: linear-gradient(135deg,#fff1eb,#e8eaff);
+    background: linear-gradient(135deg, #fff1eb, #e8eaff);
 }
 
 .performances {
-    background: linear-gradient(135deg,#e8f4ff,#f4e8ff);
+    background: linear-gradient(135deg, #e8f4ff, #f4e8ff);
 }
 
 .section-title {
-    text-align: center;
-    font-size: 36px;
-    font-weight: 800;
     margin: 0;
+    font-size: clamp(27px, 4vw, 39px);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.trophies .section-title {
     color: #5b4bb7;
 }
 
@@ -98,132 +214,162 @@ header[data-testid="stHeader"] {
 }
 
 .line {
-    width: 35%;
+    width: min(250px, 45%);
     height: 4px;
     border-radius: 10px;
-    margin: 15px auto;
-    background: linear-gradient(90deg,#ff512f,#dd2476,#667eea);
+    margin: 17px auto;
+    background: linear-gradient(90deg, #ff512f, #dd2476, #667eea);
 }
 
 .subtitle {
-    text-align: center;
     font-size: 16px;
     color: #666;
-    margin-bottom: 28px;
+    line-height: 1.7;
+    margin: 12px 0 0;
 }
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(155px,1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
 }
 
 .trophy-card {
-    min-height: 140px;
-    padding: 20px 12px;
-    border: 2px solid #e2e4ff;
-    border-radius: 16px;
-    background: linear-gradient(145deg,#fff,#f1f3ff);
-    box-shadow: 0 5px 15px rgba(102,126,234,.12);
-    text-align: center;
-    transition: .25s;
+    min-height: 145px;
+    padding: 23px 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    background: linear-gradient(145deg, #fff, #f1f3ff);
+    border: 2px solid #e2e4ff;
+    border-radius: 17px;
+    box-shadow: 0 5px 15px rgba(102,126,234,.14);
+    transition: transform .3s, box-shadow .3s, border-color .3s;
 }
 
 .trophy-card:hover {
-    transform: translateY(-7px) scale(1.025);
+    transform: translateY(-8px) scale(1.025);
     border-color: #667eea;
-    box-shadow: 0 12px 25px rgba(102,126,234,.25);
+    box-shadow: 0 13px 25px rgba(102,126,234,.24);
 }
 
 .trophy-card h3 {
     color: #4b3ca7;
-    font-size: 16px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.45;
     margin: 0 0 13px;
 }
 
 .trophy-count {
     color: #dd2476;
-    font-size: 24px;
+    font-size: 25px;
     font-weight: 800;
+}
+
+.trophy-symbol {
+    font-size: 20px;
 }
 
 .performance-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(245px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+    margin-top: 30px;
+    text-align: left;
 }
 
 .performance-card {
-    background: linear-gradient(145deg,#fff,#f5f0ff);
+    display: flex;
+    flex-direction: column;
+    min-height: 225px;
+    padding: 24px;
+    background: linear-gradient(145deg, #fff, #f5f0ff);
     border: 2px solid #e8ddff;
     border-radius: 17px;
-    padding: 24px;
-    text-align: left;
     box-shadow: 0 5px 15px rgba(118,75,162,.12);
-    transition: .25s;
+    transition: transform .3s, box-shadow .3s, border-color .3s;
 }
 
 .performance-card:hover {
-    transform: translateY(-7px);
+    transform: translateY(-8px);
     border-color: #764ba2;
-    box-shadow: 0 12px 25px rgba(118,75,162,.22);
+    box-shadow: 0 13px 25px rgba(118,75,162,.24);
 }
 
 .performance-card h3 {
-    color: #58348c;
     font-size: 19px;
-    margin: 0 0 10px;
+    font-weight: 800;
+    line-height: 1.45;
+    color: #58348c;
+    margin: 0 0 9px;
 }
 
-.performance-card .date {
+.performance-date {
     color: #dd2476;
+    font-size: 14px;
     font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.performance-result {
+    align-self: flex-start;
+    background: #eee6ff;
+    color: #58348c;
+    padding: 5px 10px;
+    border-radius: 8px;
     font-size: 13px;
+    font-weight: 800;
     margin-bottom: 14px;
 }
 
 .performance-card p {
     color: #666;
     font-size: 14px;
-    line-height: 1.7;
+    line-height: 1.75;
     margin: 0;
 }
 
-.footer {
+.site-footer {
     margin-top: 30px;
-    padding: 25px;
-    border-radius: 18px;
+    padding: 28px 20px;
     text-align: center;
     color: white;
-    background: linear-gradient(135deg,#1c1c7c,#764ba2,#dd2476);
+    background: linear-gradient(135deg, #1c1c7c, #764ba2, #dd2476);
+    border-radius: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,.15);
-    transition: .3s;
+    transition: transform .3s, box-shadow .3s;
 }
 
-.footer:hover {
+.site-footer:hover {
     transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,.2);
 }
 
-.footer h2 {
-    color: white !important;
-    margin: 0 0 8px;
+.site-footer h2 {
+    color: white;
+    font-size: 25px;
+    font-weight: 800;
+    margin: 0 0 10px;
 }
 
-.footer p {
-    margin: 0;
-    opacity: .9;
+.site-footer p {
+    color: rgba(255,255,255,.9);
+    font-size: 14px;
+    margin: 6px 0;
+    line-height: 1.6;
 }
 
 @media (max-width: 600px) {
     .block-container {
-        padding: 15px 12px;
+        padding: 15px 12px 20px !important;
     }
 
     .hero {
         padding: 30px 12px;
+        border-radius: 17px;
     }
 
     .hero img {
@@ -231,168 +377,113 @@ header[data-testid="stHeader"] {
         height: 155px;
     }
 
-    .hero h1 {
-        font-size: 32px;
-    }
-
     .section {
-        padding: 22px 14px;
+        padding: 25px 14px;
+        margin-top: 20px;
+        border-radius: 17px;
     }
 
-    .section-title {
-        font-size: 27px;
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .trophy-card {
+        min-height: 130px;
+        padding: 17px 10px;
+    }
+
+    .trophy-card h3 {
+        font-size: 15px;
+    }
+
+    .performance-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .performance-card {
+        min-height: auto;
+        padding: 21px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
     }
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
-
-# HEADER
-
-messi_image = (
-    "https://encrypted-tbn0.gstatic.com/images"
-    "?q=tbn:ANd9GcTCc9mFWHgvHeVAfXs-pkJV3V3cIRWkBbCYz1VBJO81Ax3-ro1K68b8fAo&s=10"
-)
-
-st.markdown(f"""
-<div class="hero">
-    <img src="{messi_image}" alt="Lionel Messi">
+st.html("""
+<header class="hero">
+    <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCc9mFWHgvHeVAfXs-pkJV3V3cIRWkBbCYz1VBJO81Ax3-ro1K68b8fAo&s=10"
+        alt="Lionel Messi"
+    >
     <h1><i>Lionel Messi</i></h1>
-</div>
-""", unsafe_allow_html=True)
+    <p>Legend. Champion. The GOAT.</p>
+</header>
+""")
 
-
-# TROPHIES
-
-trophies = [
-    ("La Liga", 10),
-    ("Champions League", 4),
-    ("Copa del Rey", 7),
-    ("Spanish Super Cup", 8),
-    ("UEFA Super Cup", 3),
-    ("FIFA Club World Cup", 3),
-    ("Ligue 1", 2),
-    ("Trophée des Champions", 1),
-    ("World Cup", 1),
-    ("Copa América", 2),
-    ("Finalissima", 1),
-    ("Olympic Gold", 1),
-    ("U-20 World Cup", 1),
-    ("Leagues Cup", 1),
-    ("Supporters' Shield", 1),
-    ("Eastern Conference", 1),
-    ("MLS Cup", 1),
-]
-
-trophy_html = "".join(
+trophy_cards = "".join(
     f"""
-    <div class="trophy-card">
-        <h3>{name}</h3>
+    <article class="trophy-card">
+        <h3>{escape(name)}</h3>
         <div class="trophy-count">
-            {count} {"🥇" if name == "Olympic Gold" else "🏆"}
+            {escape(count)}
+            <span class="trophy-symbol">{"🥇" if name == "Olympic Gold" else "🏆"}</span>
         </div>
-    </div>
+    </article>
     """
-    for name, count in trophies
+    for name, count in TROPHIES
 )
 
-st.markdown(f"""
+st.html(f"""
 <section class="section trophies">
     <h2 class="section-title">Trophies</h2>
     <div class="line"></div>
     <p class="subtitle">
-        <i>Lionel Messi is praised for having the most trophies.</i>
+        <i>A legendary collection of team honours from Messi's career.</i>
     </p>
     <div class="cards">
-        {trophy_html}
+        {trophy_cards}
     </div>
 </section>
-""", unsafe_allow_html=True)
+""")
 
-
-# BEST PERFORMANCES
-
-performances = [
-    (
-        "Barcelona vs Real Madrid",
-        "April 2017",
-        "Messi scored twice, including a last-minute winner, "
-        "to give Barcelona a dramatic 3–2 victory at the Bernabéu."
-    ),
-    (
-        "Barcelona vs Arsenal",
-        "April 2010",
-        "Messi scored all four goals in a legendary Champions "
-        "League performance as Barcelona won 4–1."
-    ),
-    (
-        "Barcelona vs Bayern Munich",
-        "May 2015",
-        "Messi scored twice and helped create another goal in "
-        "a famous 3–0 Champions League victory."
-    ),
-    (
-        "Barcelona vs Getafe",
-        "April 2007",
-        "Messi scored an iconic solo goal after dribbling past "
-        "multiple opponents in Barcelona's 5–2 victory."
-    ),
-    (
-        "Argentina vs Ecuador",
-        "October 2017",
-        "Messi scored a hat-trick to send Argentina to the "
-        "2018 World Cup."
-    ),
-    (
-        "Argentina vs France",
-        "December 2022",
-        "Messi scored twice in the final and converted his "
-        "penalty as Argentina won the World Cup."
-    ),
-    (
-        "Barcelona vs Manchester United",
-        "May 2009",
-        "Messi scored a memorable header as Barcelona defeated "
-        "Manchester United 2–0 in the Champions League final."
-    ),
-    (
-        "Barcelona vs Manchester United",
-        "May 2011",
-        "Messi scored from outside the box and inspired "
-        "Barcelona's 3–1 Champions League final victory."
-    ),
-]
-
-performance_html = "".join(
+performance_cards = "".join(
     f"""
-    <div class="performance-card">
-        <h3>{title}</h3>
-        <div class="date">{date}</div>
-        <p>{description}</p>
-    </div>
+    <article class="performance-card">
+        <h3>{escape(item["match"])}</h3>
+        <div class="performance-date">{escape(item["date"])}</div>
+        <div class="performance-result">
+            {escape(item["result"])}
+        </div>
+        <p>{escape(item["description"])}</p>
+    </article>
     """
-    for title, date, description in performances
+    for item in PERFORMANCES
 )
 
-st.markdown(f"""
+st.html(f"""
 <section class="section performances">
     <h2 class="section-title">Best Ever Performances</h2>
     <div class="line"></div>
     <p class="subtitle">
-        <i>Some of Lionel Messi's greatest individual performances.</i>
+        <i>Some of Lionel Messi's most memorable performances.</i>
     </p>
     <div class="performance-grid">
-        {performance_html}
+        {performance_cards}
     </div>
 </section>
-""", unsafe_allow_html=True)
+""")
 
-
-# FOOTER
-
-st.markdown("""
-<div class="footer">
-    <h2>🐐 Lionel Messi</h2>
-    <p>The GOAT of Football</p>
-</div>
-""", unsafe_allow_html=True)
+st.html("""
+<footer class="site-footer">
+    <h2>The GOAT: Lionel Messi</h2>
+    <p>A career that inspired millions around the world.</p>
+    <p>Football history. Legendary moments. Eternal greatness.</p>
+</footer>
+""")
