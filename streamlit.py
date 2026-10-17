@@ -480,6 +480,7 @@ st.html(f"""
 </section>
 """)
 
+
 st.html("""
 <footer class="site-footer">
     <h2>The GOAT: Lionel Messi</h2>
